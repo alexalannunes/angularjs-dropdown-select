@@ -1,0 +1,49 @@
+* {
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.ui-select-container {
+  position: relative;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.ui-select-dd-content {
+  position: absolute;
+  background: white;
+  top: 100%;
+  left: 0;
+  box-shadow: 0 1px 13px rgba(0, 0, 0, 0.4);
+}
+.ui-select-filter {
+  padding: 10px;
+  background: #f8f8f8;
+}
+.ui-select-filter input {
+  border: none;
+  padding: 5px 10px;
+  outline: none;
+  background: transparent;
+}
+.ui-select-check-all {
+  padding: 10px;
+  cursor: pointer;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+}
+.ui-select-check-all.active {
+  color: royalblue;
+}
+.ui-select-dd-content .dd-content {
+  padding: 5px 0;
+  max-height: 400px;
+}
+.ui-select-dd-content .dd-content div {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.ui-select-dd-content .dd-content div:hover {
+  background: #f0f0f0;
+}

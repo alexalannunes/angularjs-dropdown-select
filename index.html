@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body ng-controller="main">
+    {{person}}
+
+    <hr />
+
+    <form>
+      <input type="text" ng-model="person.name" />
+      <ui-select ng-model="person.brothers" items="items"></ui-select>
+    </form>
+
+    <!-- <div class="ui-select-container">
+      <div class="ui-select-placeholder">Selecionar</div>
+      <div class="ui-select-dd-content">
+        <div class="ui-select-filter">
+          <input type="text" placeholder="Pesquisar" />
+        </div>
+        <div class="ui-select-check-all">
+          selecionar tudo
+        </div>
+        <div class="dd-content">
+          <div>mlemlkwe</div>
+        </div>
+      </div>
+    </div> -->
+    <script src="./node_modules/angular/angular.min.js"></script>
+    <script>
+      angular
+        .module("app", [])
+        .directive("uiSelect", uiSelectDirective)
+        .controller("main", mainCtrl);
+
+      function uiSelectDirective($compile) {
+        return {
+          restrict: "E",
+          scope: {
+            items: "=",
+          },
+          require: "ngModel",
+          link: function (scope, element, attr, model) {
+            scope.selected = [];
+            scope.ids = [];
+            scope.isAllSelected = false;
+
+            scope.select = function (item) {
+              let index = scope.selected.findIndex((i) => i.id == item.id);
+              if (index != -1) {
+                scope.selected.splice(index, 1);
+                scope.ids.splice(index, 1);
+              } else {
+                scope.selected.push(item);
+                scope.ids.push(item.id);
+              }
+              model.$setViewValue(scope.selected);
+
+              checkAllSelected();
+
+              console.log(scope.ids);
+            };
+
+            scope.selectAll = function () {
+              if (!scope.isAllSelected) {
+                scope.selected = angular.copy(scope.items);
+                scope.ids = scope.items.map((i) => i.id);
+                scope.isAllSelected = true;
+              } else {
+                scope.selected = [];
+                scope.ids = [];
+                scope.isAllSelected = false;
+              }
+
+              model.$setViewValue(scope.selected);
+            };
+
+            function checkAllSelected() {
+              scope.isAllSelected = scope.selected.length == scope.items.length;
+
+              console.log(scope.isAllSelected);
+            }
+
+            scope.isActive = function (id) {
+              console.log(id);
+              return scope.ids.indexOf(id) != -1;
+            };
+
+            const dd = `
+                      <div class="ui-select-container">
+                        <div class="ui-select-placeholder">Selecionar</div>
+                        <div class="ui-select-dd-content">
+                          <div class="ui-select-filter">
+                            <input type="text" placeholder="Pesquisar" ng-model="internal_search" />
+                          </div>
+                          <div class="ui-select-check-all" ng-class="{'active' : isAllSelected}" ng-click="selectAll()">
+                            selecionar tudo
+                          </div>
+                          <div class="dd-content">
+                            <div
+                              ng-repeat="i in items | filter : internal_search"
+                              ng-click="select(i)"
+                            >
+                              <span ng-if="isActive(i.id)">V</span>
+                              {{i.name}}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    `;
+
+            let e = $compile(dd)(scope);
+
+            console.log(model);
+            element.append(e);
+          },
+        };
+      }
+
+      function mainCtrl($scope) {
+        $scope.person = {
+          name: "",
+          brothers: [],
+        };
+        $scope.items = [
+          {
+            id: 1,
+            name: "alex",
+          },
+          {
+            id: 2,
+            name: "alan",
+          },
+        ];
+      }
+    </script>
+  </body>
+</html>
