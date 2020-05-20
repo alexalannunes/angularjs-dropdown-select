@@ -4,18 +4,34 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
 
     <link rel="stylesheet" href="style.css" />
   </head>
   <body ng-controller="main">
-    {{person}}
-
-    <hr />
-
     <form>
-      <input type="text" ng-model="person.name" />
-      <ui-select ng-model="person.brothers" items="items"></ui-select>
+      <div class="row">
+        <div class="col s4">
+          <input type="text" ng-model="person.name" />
+        </div>
+        <div class="col s4">
+          <ui-select ng-model="person.brothers" items="items"></ui-select>
+        </div>
+        <div class="col s4">
+          <input type="text" ng-model="person.mom" />
+        </div>
+      </div>
     </form>
+
+    <pre>{{person |json}}</pre>
+    <hr />
 
     <!-- <div class="ui-select-container">
       <div class="ui-select-placeholder">Selecionar</div>
@@ -49,8 +65,10 @@
             scope.selected = [];
             scope.ids = [];
             scope.isAllSelected = false;
+            scope.opened = false;
 
-            scope.select = function (item) {
+            scope.select = function (item, event) {
+              event.stopPropagation();
               let index = scope.selected.findIndex((i) => i.id == item.id);
               if (index != -1) {
                 scope.selected.splice(index, 1);
@@ -66,7 +84,8 @@
               console.log(scope.ids);
             };
 
-            scope.selectAll = function () {
+            scope.selectAll = function (event) {
+              event.stopPropagation();
               if (!scope.isAllSelected) {
                 scope.selected = angular.copy(scope.items);
                 scope.ids = scope.items.map((i) => i.id);
@@ -86,30 +105,44 @@
               console.log(scope.isAllSelected);
             }
 
+            scope.click_input = function (event) {
+              event.stopPropagation();
+            };
+
             scope.isActive = function (id) {
               console.log(id);
               return scope.ids.indexOf(id) != -1;
             };
 
             const dd = `
-                      <div class="ui-select-container">
+                      <div class="ui-select-container" ng-click="opened = !opened">
                         <div class="ui-select-placeholder">Selecionar</div>
-                        <div class="ui-select-dd-content">
+                        <div class="ui-select-dd-content" ng-if="opened">
                           <div class="ui-select-filter">
-                            <input type="text" placeholder="Pesquisar" ng-model="internal_search" />
+                            <i class="material-icons">filter_list</i>
+                            <input ng-click="click_input($event)" type="text" placeholder="Pesquisar" ng-model="internal_search" />
                           </div>
-                          <div class="ui-select-check-all" ng-class="{'active' : isAllSelected}" ng-click="selectAll()">
+                          <div class="ui-select-check-all" ng-click="selectAll($event)">
+                            <i class="material-icons" ng-class="{'active' : isAllSelected}">{{isAllSelected ? 'check_box' : 'check_box_outline_blank'}}</i>
                             selecionar tudo
                           </div>
                           <div class="dd-content">
                             <div
-                              ng-repeat="i in items | filter : internal_search"
-                              ng-click="select(i)"
+                              class="dd-item"
+                              ng-repeat="i in (filtered = (items | filter: internal_search))"
+                              ng-click="select(i, $event)"
                             >
-                              <span ng-if="isActive(i.id)">V</span>
+                              
+                              <i class="material-icons" ng-class="{'active' : isActive(i.id)}">{{isActive(i.id) ? 'check_box':'check_box_outline_blank'}}</i>
                               {{i.name}}
                             </div>
                           </div>
+
+                          <div class="dd-empty-search" ng-if="!filtered.length">
+                            <span>Sem resultado para <b>{{internal_search}}</b></span>
+                          </div>
+
+                          <div class="dd-backdrop"></div>
                         </div>
                       </div>
                     `;
@@ -126,15 +159,20 @@
         $scope.person = {
           name: "",
           brothers: [],
+          mom: "",
         };
         $scope.items = [
           {
             id: 1,
-            name: "alex",
+            name: "Alex Alan Nunes",
           },
           {
             id: 2,
-            name: "alan",
+            name: "kevina Aline",
+          },
+          {
+            id: 3,
+            name: "Victor Gabriel",
           },
         ];
       }
